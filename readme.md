@@ -69,23 +69,23 @@ formatted like this:
 [Date written]
 
 The first two lines are used for generating the index. The max length for each
-line is 80 characters. After that, type away. Feel free to use <b>, <i>, etc
-for emphasis or whatever.
+line is 80 characters. After that, type away. Feel free to use inline HTML
+bold and italic lines for emphasis, etc.
 
 What sort of editing stuff can I do
 -----------------------------------
-If the parser comes across #img<name> it'll replace it with appropriate <img>
+If the parser comes across \#img<name> it'll replace it with appropriate <img>
 tags in the output html. This is just shorthand for <img src="img/name" />. Alt
 text isn't included, if that's a big deal then you're already writing a
-mouthful so you might as well write the whole <img> tag structure.
+mouthful so you might as well write the whole \<img> tag structure.
 
-#link<num> generates a hyperlink to another article. For normal external links
-continue to use <a href=blah blah etc>.
+\#link<num> generates a hyperlink to another article. For normal external links
+continue to use the normal a href deal..
 
 HTML5 BELLS AND WHISTLES
 ------------------------
-#vid<identifier> generates an embedded video.
-#mus<identifier> generates an embedded audio playback control.
+\#vid<identifier> generates an embedded video.
+\#mus<identifier> generates an embedded audio playback control.
 
 Web 2.0!
 
