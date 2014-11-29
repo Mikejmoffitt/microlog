@@ -1,0 +1,13 @@
+#ifndef ARTICLE_H
+#define ARTICLE_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Takes the source from in and generates an article page, putting it in
+// file out
+int make_article(FILE in, FILE out);
+
+
+
+#endif

@@ -26,8 +26,8 @@ machine running it (it could be a potato, just about anything can handle this).
 Okay how does it work
 --------------------
 Running microlog generates a site\ directory. Inside is an index, a pages/
-directory, and a res/ directory. These are generated from what you put in the
-source/ directory.
+directory, an articles/ directory, and a res/ directory. These are generated 
+from what you put in the source/ directory.
 
 An index2, index3, etc. may also be generated. These refer to pages of
 navigation through the site index should the number of articles grow too large.
@@ -68,24 +68,29 @@ formatted like this:
 [Article Name]
 [Date written]
 
-The first two lines are used for generating the index. The max length for each
-line is 80 characters. After that, type away. Feel free to use inline HTML
-bold and italic lines for emphasis, etc.
+The first two lines are used for generating the index. The max length for the
+title is 80 characters. The date is pretty strictly in this format:
+
+    11/20/1992
+
+That's my birthday, though. Put whatever date you want in there.
+After that, type away. Feel free to use inline HTML bold and italic lines 
+for emphasis, etc.
 
 What sort of editing stuff can I do
 -----------------------------------
-If the parser comes across \#img<name> it'll replace it with appropriate <img>
+If the parser comes across \#i(name) it'll replace it with appropriate <img>
 tags in the output html. This is just shorthand for <img src="img/name" />. Alt
 text isn't included, if that's a big deal then you're already writing a
 mouthful so you might as well write the whole \<img> tag structure.
 
-\#link<num> generates a hyperlink to another article. For normal external links
+\#l(num) generates a hyperlink to another article. For normal external links
 continue to use the normal a href deal..
 
 HTML5 BELLS AND WHISTLES
 ------------------------
-\#vid<identifier> generates an embedded video.
-\#mus<identifier> generates an embedded audio playback control.
+\#v(identifier) generates an embedded video.
+\#a(identifier) generates an embedded audio playback control.
 
 Web 2.0!
 
