@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef GLOBAL_DEF
+#define GLOBAL_DEF
+char *site_title;
+#endif
+
 // Takes the source from in and generates an article page, putting it in
 // file out. Returns a 1 on success, 0 on failure for any reason.
 int page_create_article(FILE *in, FILE *out);
