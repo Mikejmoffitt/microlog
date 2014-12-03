@@ -79,18 +79,22 @@ for emphasis, etc.
 
 What sort of editing stuff can I do
 -----------------------------------
-If the parser comes across \#i(name) it'll replace it with appropriate <img>
-tags in the output html. This is just shorthand for <img src="img/name" />. Alt
+While you can put HTML tags in there on your own, there are a few shorthands
+available. A pound sign #, followed by one of a few specific characters, stands
+in for some tags. A second pound sign signifies the appropriate closing.
+
+If the parser comes across \#i(name)# it'll replace it with appropriate <img>
+tags in the output html. This is just shorthand for <img src="res/name" />. Alt
 text isn't included, if that's a big deal then you're already writing a
 mouthful so you might as well write the whole \<img> tag structure.
 
-\#l(num) generates a hyperlink to another article. For normal external links
-continue to use the normal a href deal..
-
 HTML5 BELLS AND WHISTLES
 ------------------------
-\#v(identifier) generates an embedded video.
-\#a(identifier) generates an embedded audio playback control.
+\#v(identifier)# generates an embedded mp4 video.
+\#a(identifier)# generates an embedded audio playback control.
+
+\#m(identifier)# is like a, but it does not link to res/. You can hard link with
+this one.
 
 Web 2.0!
 

@@ -7,6 +7,7 @@
 #ifndef GLOBAL_DEF
 #define GLOBAL_DEF
 char *site_title;
+char *site_subtitle;
 #endif
 
 // Takes the source from in and generates an article page, putting it in
@@ -16,7 +17,7 @@ void chomp_newline(char *s);
 
 // Puts a general page header up, including site title and navigation bar.
 // It ends on the opening of the content. The content should follow.
-void page_header(FILE *out);
+void page_header(FILE *out, int root);
 void page_footer(FILE *out);
 void page_top_bar(FILE *out);
 

@@ -105,7 +105,7 @@ void files_index_entry(FILE *idx_file, char *d_name)
 	strcpy(ptr, IN_ARTICLES_DIR);
 	ptr += strnlen(IN_ARTICLES_DIR,255);
 	strcpy(ptr, d_name);
-	printf("Opening %s for reading...\n", in_name);
+	printf("   Opening %s for reading...\n", in_name);
 	FILE *art_file = fopen(in_name, "r");	
 	if (!art_file)
 	{
@@ -125,10 +125,11 @@ void files_index_entry(FILE *idx_file, char *d_name)
 	chomp_newline(date);
 
 	fclose(art_file);
-	printf("Putting in line about article\n");
+	printf("   Making index entry... ");
 	fprintf(idx_file,"<a href=\"articles/\%s.html\">",d_name);
 	fprintf(idx_file,"%s: %s<br /><br />",date, title);
 	fprintf(idx_file,"</a>\n");
+	printf("ok.\n");
 }
 
 void files_build_index()
@@ -136,107 +137,86 @@ void files_build_index()
 	printf("-------{ CONSTRUCTING INDECES }-------\n");
 	int index_rollover = 0;
 	int index_num = 0;
-	DIR *d;
-	struct dirent *dir;
+	struct dirent **list;
 	
 	char *fname = (char *)malloc(sizeof(char) * 64);
 	FILE *idx_file = NULL;
 
-	// First count how many articles there are...
-	int num_articles = 0;
-	d = opendir(IN_ARTICLES_DIR);
-	if (d)
-	{
-		while((dir = readdir(d)) != NULL)
-		{
-			if (dir->d_type == DT_REG)
-			{
-				num_articles = num_articles + 1;
-			}
-		}
-	}
-	closedir(d);
-	printf("Num articles: %d\n",num_articles);
-
-	// Now make a list of article filenames to iterate through in reverse
-	char **article_fnames = (char **)malloc(sizeof(char *) * num_articles);
-	d = opendir(IN_ARTICLES_DIR);
-	int article_inc = num_articles - 1;
-	if (d)
-	{
-		while((dir = readdir(d)) != NULL && article_inc >= 0)
-		{
-			int idx = article_inc;
-			article_fnames[idx] = (char *)malloc(sizeof(char) * strlen(dir->d_name) + 1);
-			strcpy(article_fnames[idx],dir->d_name);
-			article_inc--;
-		}
-	}
-	closedir(d);
-
 	// Test print the list
-	printf("List of articles:\n");
-	for (int i = 0; i < num_articles; i++)
+	int n = scandir(IN_ARTICLES_DIR,&list,0,alphasort);
+	if (n < 0)
 	{
-		printf("%d: %s\n",i,article_fnames[i]);
-		// Be sure a page exists
-		printf("Building index #%d,%d\n",index_num,index_rollover);
-		// Create a new index page
-		if (index_rollover == 0)
+		printf("Articles directory is empty. The index will not be built.\n");
+		free(list);
+		return;
+	}
+	while (n--)
+	{
+		if (list[n]->d_type == DT_REG)
 		{
-			if (index_num == 0)
+			// Be sure a page exists
+			printf("Building page %d, listing %d\n",index_num+1,index_rollover+1);
+			printf("   Article #%s\n",list[n]->d_name);
+			// Create a new index page
+			if (index_rollover == 0)
 			{
-				sprintf(fname,"site/index.html");
+				if (index_num == 0)
+				{
+					sprintf(fname,"site/index.html");
+				}
+				else
+				{
+					sprintf(fname,"site/index%d.html",index_num);
+				}
+				idx_file = fopen(fname,"w");
+				if (!idx_file)
+				{
+					printf("Couldn't open %s for writing.\nError %d\n",fname,errno);
+					free(fname);
+					free(list[n]);
+					while(n--) { free(list[n]); }
+					free(list);
+					return;
+				}
+				// Write top-of-page stuff
+				page_header(idx_file,1);
+				page_top_bar(idx_file);
+				fputs("<div id='wrap'>\n",idx_file);
+				fputs("<div id='inner'>\n",idx_file);
+				fputs("<br /><h3>Articles</h3><br />\n",idx_file);
+				fprintf(idx_file,"<div id='listing'>\n");
+				// TODO: Title for index listing itself
 			}
-			else
+	
+			// Write a line to the index page for the article
+			// open dir->d_name
+	
+			files_index_entry(idx_file, list[n]->d_name);
+	
+			index_rollover = index_rollover + 1;
+			// Index has grown large enough, close this one up.
+			if (index_rollover == ARTICLES_PER_PAGE)
 			{
-				sprintf(fname,"site/index%d.html",index_num);
+				fprintf(idx_file,"</div></div></div><br />\n");
+				page_footer(idx_file);
+				fclose(idx_file);
+				idx_file = NULL;
+				index_rollover = 0;
+				index_num = index_num + 1;
 			}
-			idx_file = fopen(fname,"w");
-			if (!idx_file)
-			{
-				printf("Couldn't open %s for writing.\nError %d\n",fname,errno);
-				free(fname);
-				closedir(d);
-				return;
-			}
-			// Write top-of-page stuff
-			page_header(idx_file);
-			page_top_bar(idx_file);
-			fputs("<div id='wrap' style='width: 768px; margin: 0 auto; text-align: center'>\n",idx_file);
-			fputs("<div id='inner' style='text-align: left;'>\n",idx_file);
-			fprintf(idx_file,"<ul>\n");
-			// TODO: Title for index listing itself
 		}
-
-		// Write a line to the index page for the article
-		// open dir->d_name
-
-		files_index_entry(idx_file, article_fnames[i]);
-
-		index_rollover = index_rollover + 1;
-		// Index has grown large enough, close this one up.
-		if (index_rollover == ARTICLES_PER_PAGE)
-		{
-			fprintf(idx_file,"</div></div></ul>\n");
-			page_footer(idx_file);
-			fclose(idx_file);
-			idx_file = NULL;
-			index_rollover = 0;
-			index_num = index_num + 1;
-		}
+		free(list[n]);
 	}
-	if (idx_file != NULL)
-	{
-		fprintf(idx_file,"</ul>\n");
-		page_footer(idx_file);
-		fclose(idx_file);
-	}
-
-	for (int i = 0; i < num_articles; i++)
-	{
-		free(article_fnames[i]);
-	}
-	free(article_fnames);
+	free(list);
+	fprintf(idx_file,"<br /></div></div></div><br />\n");
+	page_footer(idx_file);
+	fclose(idx_file);
 	free(fname);
+}
+
+void files_copy_res()
+{
+	// TODO: Don't use system(char *)!
+	system("cp source/style.css site/style.css");
+	system("cp -r source/resources/ site/res/");
 }
