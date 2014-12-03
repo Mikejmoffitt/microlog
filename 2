@@ -133,7 +133,7 @@ void files_index_entry(FILE *idx_file, char *d_name)
 
 void files_build_index()
 {
-	printf("-------{ CONSTRUCTING INDECES }-------\n");
+	printf("--------CONSTRUCTING INDECES--------\n");
 	int index_rollover = 0;
 	int index_num = 0;
 	DIR *d;
@@ -173,7 +173,6 @@ void files_build_index()
 		}
 	}
 	closedir(d);
-
 	// Test print the list
 	printf("List of articles:\n");
 	for (int i = 0; i < num_articles; i++)

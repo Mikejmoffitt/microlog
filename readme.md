@@ -39,7 +39,7 @@ any old text editor.
 
 There is also source/pages. These are like articles, except they have their
 own index that is fixed at the top of the page - things like "about" and 
-"downloads", etc.
+"downloads", etc. This feature is not yet implemented.
 
 Finally, there's source/resources. This is exactly what it sounds like, it just
 lets you reference things by their names and it'll drop them into res/ in
@@ -58,7 +58,7 @@ text-only browsers!
 Tell me more about articles
 ---------------------------
 Articles are written in plaintext, though HTML formatting may be used. Use of
-deprecated tags like <u> is encouraged. Styles may be defined in styles.css,
+deprecated tags like <u> and </u> is fine. Styles may be defined in styles.css,
 which is in the site's output directory.
 
 There's no need to put any of the HTML boilerplate. In fact, don't, it might

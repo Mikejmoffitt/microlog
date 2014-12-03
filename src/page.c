@@ -2,6 +2,7 @@
 
 int page_create_article(FILE *in, FILE *out)
 {
+	printf("-------{ PARSING ARTICLE }-------\n");
 	if (!in || !out)
 	{
 		printf("Couldn't create article.\n");
