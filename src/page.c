@@ -15,7 +15,7 @@ void handle_pound(FILE *in, FILE *out)
 	}
 	else if (get == 'v')
 	{
-		fputs("<br /><video width='640' controls>\n<source src='../res/",out);
+		fputs("<br /><video controls>\n<source src='../res/",out);
 		waiting = WAITING_VID;
 	}
 	else if (get == 'a')
@@ -43,10 +43,10 @@ void handle_pound(FILE *in, FILE *out)
 					fputs("' />",out);
 					return;
 				case WAITING_VID:
-					fputs("' type='video/mp4'><br />",out);
+					fputs("' type='video/mp4'><br /></video>",out);
 					return;
 				case WAITING_AUDIO:
-					fputs("' type='audio/mpeg'><br />",out);
+					fputs("' type='audio/mpeg'></audio><br />",out);
 					return;
 			}
 		}
@@ -145,7 +145,14 @@ void page_header(FILE *out, int root)
 	}
 	fprintf(out,"<html>\n<head>\n\t<title>%s</title>\n",site_title);
 	fprintf(out,"\t<div><h1>");
-	fprintf(out,"%s</h1>\n",site_title);
+	if (root)
+	{
+		fprintf(out,"<a href='index.html'>%s</a></h1>\n",site_title);
+	}
+	else
+	{
+		fprintf(out,"<a href='../index.html'>%s</a></h1>\n",site_title);
+	}
 	fprintf(out,"<h2>%s</h2></div><br />\n",site_subtitle);
 }
 

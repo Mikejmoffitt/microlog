@@ -15,6 +15,7 @@ void files_parse_pages(void);
 void files_index_entry(FILE *idx, char *d_name);
 void files_build_index(void);
 
+void files_make_structure(void);
 void files_copy_res(void);
 
 #endif

@@ -11,7 +11,7 @@
 
 #define OUT_INDEX_DIR "site/"
 
-#define ARTICLES_PER_PAGE 10
+#define ARTICLES_PER_PAGE 100
 
 void files_process_article(char *d_name)
 {
@@ -76,7 +76,7 @@ void files_parse_articles()
 		{	
 			// Be sure this is not a symlink, directory, etc
 			// Generate an article based on the file present
-			if (dir->d_type == DT_REG)
+			if (dir->d_type == DT_REG && dir->d_name[0] != '.')
 			{
 				files_process_article(dir->d_name);
 			}
@@ -152,7 +152,7 @@ void files_build_index()
 	}
 	while (n--)
 	{
-		if (list[n]->d_type == DT_REG)
+		if (list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
 		{
 			// Be sure a page exists
 			printf("Building page %d, listing %d\n",index_num+1,index_rollover+1);
@@ -214,9 +214,18 @@ void files_build_index()
 	free(fname);
 }
 
+void files_make_structure()
+{
+	// TODO: system(char *) seriously take this out soon
+	// and don't just rely on mkdir silently failing
+	system("mkdir -p ./site/articles");
+	system("mkdir -p ./site/pages");
+	system("mkdir -p ./site/res");
+}
+
 void files_copy_res()
 {
 	// TODO: Don't use system(char *)!
-	system("cp source/style.css site/style.css");
-	system("cp -r source/resources/ site/res/");
+	system("cp ./source/style.css ./site/style.css");
+	system("cp -n -r ./source/resources/* ./site/res/");
 }

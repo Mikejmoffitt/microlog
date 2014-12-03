@@ -26,6 +26,8 @@ int main(int argc, char **argv)
 		site_subtitle = (char *)malloc(sizeof(char) * 2);
 		sprintf(site_subtitle," ");
 	}
+
+	files_make_structure();
 	
 	files_build_index();
 	files_parse_articles();

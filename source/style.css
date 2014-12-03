@@ -46,6 +46,11 @@ h3 /* Article title */
 	margin-left: 32px;
 }
 
+img, video
+{
+	max-width: 704px;
+}
+
 
 a, a:visited
 {
