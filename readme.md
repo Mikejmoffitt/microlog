@@ -26,7 +26,20 @@ machine running it (it could be a potato, just about anything can handle this).
 Uh fine but what do I have to do
 --------------------------------
 Download the source, build microlog with make. Edit the makefile to use GCC
-if you don't have clang. It'll spit out some junk. 
+if you don't have clang. 
+
+It'll create the source directory for your website, as well as the subdirs.
+It doesn't matter what you name the articles, but they are sorted by simple
+alphanumerical sorting so maybe it would be wise to prepend some numbers. 
+Probably sorting will vary from one OS to another. Personally I use four 
+digits with leading zeroes to make sure that doesn't happen. Name them anything
+you want, whatever. 
+
+Run ./microlog "name of your website" and it'll spit out stuff to a site dir.
+I recommend making a symlink between ./site and your public_html folder or 
+whatever your HTTP software uses so you don't have to copy stuff.
+
+That's all.
 
 Okay how does it work
 --------------------
