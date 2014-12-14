@@ -23,6 +23,11 @@ security or a database or auth or anything like that - security is just a huge
 illusion anyway. The only authentication you care about is SSHing into the 
 machine running it (it could be a potato, just about anything can handle this).
 
+Uh fine but what do I have to do
+--------------------------------
+Download the source, build microlog with make. Edit the makefile to use GCC
+if you don't have clang. It'll spit out some junk. 
+
 Okay how does it work
 --------------------
 Running microlog generates a site\ directory. Inside is an index, a pages/
@@ -62,11 +67,13 @@ deprecated tags like <u> and </u> is fine. Styles may be defined in styles.css,
 which is in the site's output directory.
 
 There's no need to put any of the HTML boilerplate. In fact, don't, it might
-break something. All that is needed at the top is the first few lines to be
+break something. All that is needed at the top is the first lines to be
 formatted like this:
 
-[Article Name]
-[Date written]
+    [Article Name]
+
+Then throw this guy on the second line:
+    [Date written]
 
 The first two lines are used for generating the index. The max length for the
 title is 80 characters. The date is pretty strictly in this format:

@@ -152,7 +152,7 @@ void files_build_index()
 	}
 	while (n--)
 	{
-		if (list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
+		if (list[n] && list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
 		{
 			// Be sure a page exists
 			printf("Building page %d, listing %d\n",index_num+1,index_rollover+1);
@@ -205,9 +205,22 @@ void files_build_index()
 				index_num = index_num + 1;
 			}
 		}
-		free(list[n]);
+		printf("Trying to free the list entry\n");
+		if (list[n])
+		{
+			printf("REALLY DOING IT \n");
+			free(list[n]);
+			printf("Doneskies\n");
+		}
 	}
-	free(list);
+	if (list)
+	{
+		free(list);
+	}
+	if (!fname || !idx_file)
+	{
+		return;
+	}
 	fprintf(idx_file,"<br /></div></div></div><br />\n");
 	page_footer(idx_file);
 	fclose(idx_file);
@@ -218,6 +231,10 @@ void files_make_structure()
 {
 	// TODO: system(char *) seriously take this out soon
 	// and don't just rely on mkdir silently failing
+	system("mkdir -p ./source/");
+	system("mkdir -p ./source/articles");
+	system("mkdir -p ./source/resources");
+	system("mkdir -p ./source/pages");
 	system("mkdir -p ./site/articles");
 	system("mkdir -p ./site/pages");
 	system("mkdir -p ./site/res");

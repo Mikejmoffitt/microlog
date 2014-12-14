@@ -30,6 +30,7 @@ void handle_pound(FILE *in, FILE *out)
 	}
 	else
 	{
+		fputc('#',out);
 		return;
 	}
 	while (get != EOF)
@@ -59,10 +60,10 @@ void handle_pound(FILE *in, FILE *out)
 
 int page_create_article(FILE *in, FILE *out)
 {
-	printf("-------{ PARSING ARTICLE }-------\n");
+	printf("-------{ PARSING SOURCE }-------\n");
 	if (!in || !out)
 	{
-		printf("Couldn't create article.\n");
+		printf("Couldn't open source file.\n");
 		return 0;
 	}
 	char *title = NULL; // 80 characters of whatever
@@ -91,7 +92,10 @@ int page_create_article(FILE *in, FILE *out)
 
 	fputs("<div id='content'>\n",out);
 	fputs("<span id='date'>Written ",out);
-	fputs(date,out);
+	if (date[0] != '#') // Choice to omit the date
+	{
+		fputs(date,out);
+	}
 	fputs("</span><br /><br />\n",out);
 	// Get the rest of the article. 
 	while (get != EOF)
@@ -158,6 +162,7 @@ void page_header(FILE *out, int root)
 
 void page_footer(FILE *out)
 {
+	fprintf(out,"<h4>This website was generated using <a href='https://github.com/Mikejmoffitt/microlog'>MicroLog</a>.</span>\n");
 }
 
 void page_top_bar(FILE *out)
