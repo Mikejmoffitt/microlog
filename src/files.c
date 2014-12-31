@@ -132,6 +132,8 @@ void files_build_index()
 		free(list);
 		return;
 	}
+	int num_pages = n / ARTICLES_PER_PAGE;
+	num_pages++;
 	while (n--)
 	{
 		if (list[n] && list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
@@ -162,10 +164,16 @@ void files_build_index()
 				}
 				// Write top-of-page stuff
 				page_header(idx_file,1);
-				page_top_bar(idx_file);
 				fputs("<div id='wrap'>\n",idx_file);
 				fputs("<div id='inner'>\n",idx_file);
-				fputs("<br /><h3>Articles</h3><br />\n",idx_file);
+				if (num_pages > 1)
+				{
+					fprintf(idx_file,"<br /><h3>Articles (Page %d / %d)</h3><br />\n",index_num+1,num_pages);
+				}
+				else
+				{
+					fputs("<br /><h3>Articles</h3><br />\n",idx_file);
+				}
 				fprintf(idx_file,"<div id='listing'>\n");
 				// TODO: Title for index listing itself
 			}
@@ -177,14 +185,50 @@ void files_build_index()
 	
 			index_rollover = index_rollover + 1;
 			// Index has grown large enough, close this one up.
-			if (index_rollover == ARTICLES_PER_PAGE)
+			if (index_rollover == ARTICLES_PER_PAGE || n == 0)
 			{
-				fprintf(idx_file,"</div></div></div><br />\n");
+				fprintf(idx_file,"<br /></div></div></div>\n");
+				fprintf(idx_file,"<h6>");
+				if (index_num != 0)
+				{
+					if (index_num != 1)
+					{
+						fprintf(idx_file,"<a href='index%d.html'><< Previous </a>",index_num - 1);
+					}
+					else
+					{
+						fprintf(idx_file,"<a href='index.html'><< Previous </a>");
+					}	
+				}
+				else
+				{
+					fprintf(idx_file,"<span id='nav-seperator'><< Previous </span>");
+				}
+				fprintf(idx_file,"<span id='nav-seperator'> | </span>");
+				// Next link
+				if (n != 0)
+				{
+					fprintf(idx_file,"<a href='index%d.html'>Next >></a>\n",index_num + 1);
+				}
+				else
+				{
+					fprintf(idx_file,"<span class='disabled'>Next >></span>\n");
+				}
+				fprintf(idx_file,"</h6>");
 				page_footer(idx_file);
 				fclose(idx_file);
 				idx_file = NULL;
 				index_rollover = 0;
 				index_num = index_num + 1;
+			}
+		}
+		// Make dummy entries to maintain page length
+		if (n == 0)
+		{
+			while (index_rollover < ARTICLES_PER_PAGE)
+			{
+				fprintf(idx_file," <br /><br />\n");
+				index_rollover++;
 			}
 		}
 		printf("Trying to free the list entry\n");
@@ -203,10 +247,96 @@ void files_build_index()
 	{
 		return;
 	}
-	fprintf(idx_file,"<br /></div></div></div><br />\n");
+	fprintf(idx_file,"<br /></div></div></div>\n");
+	fprintf(idx_file,"<h6>");
+	if (index_num != 0)
+	{
+		if (index_num != 1)
+		{
+			fprintf(idx_file,"<a href='index%d.html'><< Previous </a>",index_num - 1);
+		}
+		else
+		{
+			fprintf(idx_file,"<a href='index.html'><< Previous </a>");
+		}	
+	}
+	else
+	{
+		fprintf(idx_file,"<span id='nav-seperator'><< Previous </span>");
+	}
+	fprintf(idx_file,"<span id='nav-seperator'> | </span>");
+	fprintf(idx_file,"<span id='nav-seperator'>Next >></span>\n");
+	fprintf(idx_file,"</h6>");
 	page_footer(idx_file);
 	fclose(idx_file);
 	free(fname);
+}
+
+void files_generate_pages_bar(FILE *page, int root)
+{
+	fprintf(page,"<br /><h5 id='navbar'>");
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(IN_PAGES_DIR);
+	int first = 1;
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{	
+			// Be sure this is not a symlink, directory, etc
+			// Generate an article based on the file present
+			if (dir->d_type == DT_REG && dir->d_name[0] != '.')
+			{
+				if (!first)
+				{
+					fprintf(page, " <span id='nav-seperator'>|</span> ");
+				}
+				// Determine the input filename
+				int in_name_len = strnlen(IN_PAGES_DIR,255);
+				in_name_len += strnlen(dir->d_name,255);
+				in_name_len++; // For null terminator
+
+				char *in_name = (char *)malloc(sizeof(char) * in_name_len);
+				char *ptr = in_name;
+				strcpy(ptr, IN_PAGES_DIR);
+				ptr += strnlen(IN_PAGES_DIR,255);
+				strcpy(ptr, dir->d_name);
+				printf("Opening %s for reading...\n", in_name);
+				FILE *in_file = fopen(in_name,"r");
+				if (!in_file)
+				{
+					printf("Couldn't open %s for reading.\nError %d\n",in_name,errno);
+					free(in_name);
+					return;
+				}	
+				
+				// Start of <a> tag
+				if (root)
+				{
+					fprintf(page,"<a href='pages/%s.html'>",dir->d_name);
+				}
+				else
+				{
+					fprintf(page,"<a href='../pages/%s.html'>",dir->d_name);
+				}
+
+				// Just pull the first line of the page
+				char get = fgetc(in_file);
+				while (get != EOF && get != '\n' && get != '\r')
+				{
+					fputc(get,page);
+					get = fgetc(in_file);
+				}
+				fclose(in_file);
+				free(in_name);
+				fprintf(page,"</a>\n");
+				first = 0;
+			}
+		}
+		closedir(d);
+	}
+
+	fprintf(page,"</h5><br />");
 }
 
 void files_make_structure()

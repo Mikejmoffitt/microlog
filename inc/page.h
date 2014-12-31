@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "files.h"
+
 #ifndef GLOBAL_DEF
 #define GLOBAL_DEF
 char *site_title;

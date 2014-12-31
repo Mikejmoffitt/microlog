@@ -154,12 +154,15 @@ void page_header(FILE *out, int root)
 	{
 		fprintf(out,"<a href='../index.html'>%s</a></h1>\n",site_title);
 	}
-	fprintf(out,"<h2>%s</h2></div><br />\n",site_subtitle);
+	fprintf(out,"<h2>%s</h2>\n",site_subtitle);
+	files_generate_pages_bar(out, root);
+	fprintf(out,"</div></head>\n<body>");
 }
 
 void page_footer(FILE *out)
-{
-	fprintf(out,"<h4>This website was generated using <a href='https://github.com/Mikejmoffitt/microlog'>MicroLog</a>.</span>\n");
+{	
+	fprintf(out,"<h4>This website was generated using <a href='https://github.com/Mikejmoffitt/microlog'>MicroLog</a>.</h4>\n");
+	fprintf(out,"</body>");
 }
 
 void page_top_bar(FILE *out)

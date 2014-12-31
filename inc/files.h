@@ -12,7 +12,7 @@
 #define OUT_PAGES_DIR "site/pages/"
 #define OUT_INDEX_DIR "site/"
 #define OUT_APPEND ".html"
-#define ARTICLES_PER_PAGE 100
+#define ARTICLES_PER_PAGE 15
 
 // Filename to parse, directory to look in, directory to put resulting HTML file 
 void files_process_article(char *d_name, char *in_dir, char *out_dir);
@@ -25,6 +25,9 @@ void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name);
 
 // Go through the articles dir and run files_index_entry for each one
 void files_build_index(void);
+
+// Look through pages_dir and print top bar links to page
+void files_generate_pages_bar(FILE *page, int root);
 
 // TODO: Take out this garbage. Builds the site directory and copies to res/
 void files_make_structure(void);
