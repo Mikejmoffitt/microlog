@@ -49,6 +49,8 @@ h3 /* Article title */
 img, video
 {
 	max-width: 704px;
+	margin-bottom: 16px;
+	margin-top: 16px;
 }
 
 

@@ -30,7 +30,8 @@ int main(int argc, char **argv)
 	files_make_structure();
 	
 	files_build_index();
-	files_parse_articles();
+	files_parse_dir(IN_ARTICLES_DIR,OUT_ARTICLES_DIR);
+	files_parse_dir(IN_PAGES_DIR,OUT_PAGES_DIR);
 	files_copy_res();
 
 	return 0;

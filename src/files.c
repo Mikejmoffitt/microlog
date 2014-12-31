@@ -1,46 +1,37 @@
 #include "files.h"
-
 #include "page.h"
-
-#define IN_ARTICLES_DIR "source/articles/"
-#define OUT_ARTICLES_DIR "site/articles/"
-#define OUT_APPEND ".html"
-
-#define IN_PAGES_DIR "source/pages/"
-#define OUT_PAGES_DIR "site/pages/"
-
-#define OUT_INDEX_DIR "site/"
-
-#define ARTICLES_PER_PAGE 100
-
-void files_process_article(char *d_name)
+ 
+void files_process_article(char *d_name, char *in_dir, char *out_dir)
 {
 	printf("--------------------------------------------------\n");
 
 	// Determine the input filename
-	int in_name_len = strnlen(IN_ARTICLES_DIR,255);
+	int in_name_len = strnlen(in_dir,255);
 	in_name_len += strnlen(d_name,255);
 	in_name_len++; // For null terminator
+
 	char *in_name = (char *)malloc(sizeof(char) * in_name_len);
 	char *ptr = in_name;
-	strcpy(ptr, IN_ARTICLES_DIR);
-	ptr += strnlen(IN_ARTICLES_DIR,255);
+	strcpy(ptr, in_dir);
+	ptr += strnlen(in_dir,255);
 	strcpy(ptr, d_name);
-	printf("Opening %s for reading...\n", in_name);
+
 
 	// Do the same for output
-	int out_name_len = strnlen(OUT_ARTICLES_DIR,255);
+	int out_name_len = strnlen(out_dir,255);
 	out_name_len += strnlen(OUT_APPEND,255);
 	out_name_len += strnlen(d_name,255);
 	out_name_len++; // For null terminator
+
 	char *out_name = (char *)malloc(sizeof(char) * out_name_len);
 	ptr = out_name;
-	strcpy(ptr, OUT_ARTICLES_DIR);
-	ptr += strnlen(OUT_ARTICLES_DIR,255);
+	strcpy(ptr, out_dir);
+	ptr += strnlen(out_dir,255);
 	strcpy(ptr, d_name);
 	ptr += strnlen(d_name,255);
 	strcpy(ptr,OUT_APPEND);
-	printf("Opening %s for writing...\n", out_name);
+
+	printf("Opening %s for reading...\n", in_name);
 	FILE *in_file = fopen(in_name,"r");
 	if (!in_file)
 	{
@@ -49,6 +40,7 @@ void files_process_article(char *d_name)
 		free(out_name);
 		return;
 	}	
+	printf("Opening %s for writing...\n", out_name);
 	FILE *out_file = fopen(out_name,"w");
 	if (!out_file)
 	{
@@ -65,11 +57,11 @@ void files_process_article(char *d_name)
 	free(out_name);
 }
 
-void files_parse_articles()
+void files_parse_dir(char *dir_path, char *out_path)
 {
 	DIR *d;
 	struct dirent *dir;
-	d = opendir("./source/articles/");
+	d = opendir(dir_path);
 	if (d)
 	{
 		while ((dir = readdir(d)) != NULL)
@@ -78,32 +70,22 @@ void files_parse_articles()
 			// Generate an article based on the file present
 			if (dir->d_type == DT_REG && dir->d_name[0] != '.')
 			{
-				files_process_article(dir->d_name);
+				files_process_article(dir->d_name, dir_path, out_path);
 			}
 		}
+		closedir(d);
 	}
-	closedir(d);
 }
 
-void files_process_page(char *d_name)
+void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name)
 {
-
-}
-
-void files_parse_pages()
-{
-
-}
-
-void files_index_entry(FILE *idx_file, char *d_name)
-{
-	int in_name_len = strnlen(IN_ARTICLES_DIR,255);
+	int in_name_len = strnlen(articles_dir,255);
 	in_name_len += strnlen(d_name,255);
 	in_name_len++; // For null terminator
 	char *in_name = (char *)malloc(sizeof(char) * in_name_len);
 	char *ptr = in_name;
-	strcpy(ptr, IN_ARTICLES_DIR);
-	ptr += strnlen(IN_ARTICLES_DIR,255);
+	strcpy(ptr, articles_dir);
+	ptr += strnlen(articles_dir,255);
 	strcpy(ptr, d_name);
 	printf("   Opening %s for reading...\n", in_name);
 	FILE *art_file = fopen(in_name, "r");	
@@ -191,7 +173,7 @@ void files_build_index()
 			// Write a line to the index page for the article
 			// open dir->d_name
 	
-			files_index_entry(idx_file, list[n]->d_name);
+			files_index_entry(idx_file, IN_ARTICLES_DIR, list[n]->d_name);
 	
 			index_rollover = index_rollover + 1;
 			// Index has grown large enough, close this one up.
@@ -242,7 +224,7 @@ void files_make_structure()
 
 void files_copy_res()
 {
-	// TODO: Don't use system(char *)!
+	// TODO: Don't use system(char *)! This is terrible code!
 	system("cp ./source/style.css ./site/style.css");
 	system("cp -n -r ./source/resources/* ./site/res/");
 }

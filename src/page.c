@@ -8,30 +8,27 @@ void handle_pound(FILE *in, FILE *out)
 {
 	char get = fgetc(in);
 	int waiting = 0;
-	if (get == 'i')
-	{
-		fputs("<img src='../res/",out);
-		waiting = WAITING_IMG;
-	}
-	else if (get == 'v')
-	{
-		fputs("<br /><video controls>\n<source src='../res/",out);
-		waiting = WAITING_VID;
-	}
-	else if (get == 'a')
-	{
-		fputs("<br /><audio controls>\n<source src='../res/",out);
-		waiting = WAITING_AUDIO;
-	}
-	else if (get == 'm')
-	{
-		fputs("<br /><audio controls>\n<source src='",out);
-		waiting = WAITING_AUDIO;
-	}
-	else
-	{
-		fputc('#',out);
-		return;
+	switch (get)
+	{	
+		default:
+			fputc('#',out);
+			break;
+		case 'i':
+			fputs("<img src='../res/",out);
+			waiting = WAITING_IMG;
+			break;
+		case 'v':
+			fputs("<br /><video controls>\n<source src='../res/",out);
+			waiting = WAITING_VID;
+			break;
+		case 'a':
+			fputs("<br /><audio controls>\n<source src='../res/",out);
+			waiting = WAITING_AUDIO;
+			break;
+		case 'm':
+			fputs("<br /><audio controls>\n<source src='",out);
+			waiting = WAITING_AUDIO;
+			break;
 	}
 	while (get != EOF)
 	{

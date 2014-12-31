@@ -6,15 +6,27 @@
 #include <stdio.h>
 #include <errno.h>
 
-void files_process_article(char *d_name);
-void files_parse_articles(void);
+#define IN_ARTICLES_DIR "source/articles/"
+#define OUT_ARTICLES_DIR "site/articles/"
+#define IN_PAGES_DIR "source/pages/"
+#define OUT_PAGES_DIR "site/pages/"
+#define OUT_INDEX_DIR "site/"
+#define OUT_APPEND ".html"
+#define ARTICLES_PER_PAGE 100
 
-void files_process_page(char *d_name);
-void files_parse_pages(void);
+// Filename to parse, directory to look in, directory to put resulting HTML file 
+void files_process_article(char *d_name, char *in_dir, char *out_dir);
 
-void files_index_entry(FILE *idx, char *d_name);
+// Directory to pull pages from, directory to dump resulting HTML files
+void files_parse_dir(char *dir_path, char *out_path);
+
+// Slap on a line for the article d_name in articles_dir onto idx_file
+void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name);
+
+// Go through the articles dir and run files_index_entry for each one
 void files_build_index(void);
 
+// TODO: Take out this garbage. Builds the site directory and copies to res/
 void files_make_structure(void);
 void files_copy_res(void);
 
