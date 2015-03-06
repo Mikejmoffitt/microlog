@@ -1,6 +1,6 @@
 body
 {
-	font-family: Arial, sans-serif;
+	font-family: sans-serif;
 	background-color: #111111;
 	color: #BBBBBB;
 }
@@ -134,3 +134,13 @@ h4
 	width: 90%;
 }
 
+#code
+{
+	margin: 0 auto;
+	font-family: monospace;
+	background-color: #111111;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	padding-left: 16px;
+	padding-right: 16px;
+}

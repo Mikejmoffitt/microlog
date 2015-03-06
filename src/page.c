@@ -3,6 +3,7 @@
 #define WAITING_IMG 1
 #define WAITING_VID 2
 #define WAITING_AUDIO 3
+#define WAITING_CODE 4
 
 void handle_pound(FILE *in, FILE *out)
 {
@@ -11,7 +12,9 @@ void handle_pound(FILE *in, FILE *out)
 	switch (get)
 	{	
 		default:
+			// User really wanted pound and whichever char followed it
 			fputc('#',out);
+			fputc(get,out);
 			break;
 		case 'i':
 			fputs("<img src='../res/",out);
@@ -29,28 +32,50 @@ void handle_pound(FILE *in, FILE *out)
 			fputs("<br /><audio controls>\n<source src='",out);
 			waiting = WAITING_AUDIO;
 			break;
+		case 'c':
+			fputs("<br /><div id='code'>",out);
+			waiting = WAITING_CODE;
+			break;
 	}
 	while (get != EOF)
 	{
 		get = fgetc(in);
 		if (get == '#')
 		{
-			switch (waiting)
+			char otherget = fgetc(in);
+			if (otherget == '#')
 			{
-				case WAITING_IMG:
-					fputs("' />",out);
-					return;
-				case WAITING_VID:
-					fputs("' type='video/mp4'><br /></video>",out);
-					return;
-				case WAITING_AUDIO:
-					fputs("' type='audio/mpeg'></audio><br />",out);
-					return;
+				fputc(otherget,out);
+			}
+			else
+			{
+				switch (waiting)
+				{
+					case WAITING_IMG:
+						fputs("' />",out);
+						return;
+					case WAITING_VID:
+						fputs("' type='video/mp4'><br /></video>",out);
+						return;
+					case WAITING_AUDIO:
+						fputs("' type='audio/mpeg'></audio><br />",out);
+						return;
+					case WAITING_CODE:
+						fputs("</div><br />",out);
+						return;
+				}
 			}
 		}
 		else
 		{	
-			fputc(get,out);
+			if (get == '\n')
+			{
+				fputs("<br />\n",out);
+			}
+			else
+			{
+				fputc(get,out);
+			}
 		}
 	}
 }

@@ -108,6 +108,10 @@ tags in the output html. This is just shorthand for <img src="res/name" />. Alt
 text isn't included, if that's a big deal then you're already writing a
 mouthful so you might as well write the whole \<img> tag structure.
 
+\#c(lines of code)# makes a block of text with a darkened backdrop and a fixed
+width font. As the name implies, this is for code. Right now there is no syntax
+highlighting, but it would be a nice feature to have in the future.
+
 HTML5 BELLS AND WHISTLES
 ------------------------
 \#v(identifier)# generates an embedded mp4 video.
