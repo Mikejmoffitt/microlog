@@ -129,7 +129,7 @@ void files_build_index()
 		free(list);
 		return;
 	}
-	int num_pages = n / ARTICLES_PER_PAGE;
+	int num_pages = (n - 1) / ARTICLES_PER_PAGE;
 	num_pages++;
 	while (n--)
 	{
@@ -305,7 +305,6 @@ void files_generate_pages_bar(FILE *page, int root)
 				strcpy(ptr, IN_PAGES_DIR);
 				ptr += strnlen(IN_PAGES_DIR,255);
 				strcpy(ptr, dir->d_name);
-				printf("Opening %s for reading...\n", in_name);
 				FILE *in_file = fopen(in_name,"r");
 				if (!in_file)
 				{
