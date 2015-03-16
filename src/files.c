@@ -1,10 +1,13 @@
 #include "files.h"
 #include "page.h"
+
+int files_omit_dotfiles(const struct dirent *entry)
+{
+	return (entry->d_name[0] != '.');
+}
  
 void files_process_article(char *d_name, char *in_dir, char *out_dir)
 {
-	printf("--------------------------------------------------\n");
-
 	// Determine the input filename
 	int in_name_len = strnlen(in_dir,255);
 	in_name_len += strnlen(d_name,255);
@@ -31,7 +34,6 @@ void files_process_article(char *d_name, char *in_dir, char *out_dir)
 	ptr += strnlen(d_name,255);
 	strcpy(ptr,OUT_APPEND);
 
-	printf("Opening %s for reading...\n", in_name);
 	FILE *in_file = fopen(in_name,"r");
 	if (!in_file)
 	{
@@ -40,7 +42,6 @@ void files_process_article(char *d_name, char *in_dir, char *out_dir)
 		free(out_name);
 		return;
 	}	
-	printf("Opening %s for writing...\n", out_name);
 	FILE *out_file = fopen(out_name,"w");
 	if (!out_file)
 	{
@@ -87,7 +88,6 @@ void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name)
 	strcpy(ptr, articles_dir);
 	ptr += strnlen(articles_dir,255);
 	strcpy(ptr, d_name);
-	printf("   Opening %s for reading...\n", in_name);
 	FILE *art_file = fopen(in_name, "r");	
 	if (!art_file)
 	{
@@ -107,16 +107,13 @@ void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name)
 	chomp_newline(date);
 
 	fclose(art_file);
-	printf("   Making index entry... ");
 	fprintf(idx_file,"<a href=\"articles/\%s.html\">",d_name);
 	fprintf(idx_file,"%s: %s<br /><br />",date, title);
 	fprintf(idx_file,"</a>\n");
-	printf("ok.\n");
 }
 
 void files_build_index()
 {
-	printf("-------{ CONSTRUCTING INDECES }-------\n");
 	int index_rollover = 0;
 	int index_num = 0;
 	struct dirent **list;
@@ -125,8 +122,8 @@ void files_build_index()
 	FILE *idx_file = NULL;
 
 	// Test print the list
-	int n = scandir(IN_ARTICLES_DIR,&list,0,alphasort);
-	if (n < 0)
+	int n = scandir(IN_ARTICLES_DIR,&list,&files_omit_dotfiles,alphasort);
+	if (n <= 0)
 	{
 		printf("Articles directory is empty. The index will not be built.\n");
 		free(list);
@@ -136,20 +133,22 @@ void files_build_index()
 	num_pages++;
 	while (n--)
 	{
-		if (list[n] && list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
+		if (n >= 0 && list[n] && list[n]->d_type == DT_REG && list[n]->d_name[0] != '.')
 		{
 			// Be sure a page exists
-			printf("Building page %d, listing %d\n",index_num+1,index_rollover+1);
-			printf("   Article #%s\n",list[n]->d_name);
+			// printf("Building page %d, listing %d\n",index_num+1,index_rollover+1);
+			// printf("   Article #%s\n",list[n]->d_name);
 			// Create a new index page
 			if (index_rollover == 0)
 			{
 				if (index_num == 0)
 				{
+					//printf("Creating index.html\n");
 					sprintf(fname,"site/index.html");
 				}
 				else
 				{
+					//printf("Creating index%d.html\n",index_num);
 					sprintf(fname,"site/index%d.html",index_num);
 				}
 				idx_file = fopen(fname,"w");
@@ -177,16 +176,28 @@ void files_build_index()
 				fprintf(idx_file,"<div id='listing'>\n");
 				// TODO: Title for index listing itself
 			}
+			//printf("ok\n");
 	
 			// Write a line to the index page for the article
 			// open dir->d_name
 	
 			files_index_entry(idx_file, IN_ARTICLES_DIR, list[n]->d_name);
-	
+			//printf("Made index entry\n");	
 			index_rollover = index_rollover + 1;
 			// Index has grown large enough, close this one up.
-			if (index_rollover == ARTICLES_PER_PAGE || n == 0)
+			if ((index_rollover >= ARTICLES_PER_PAGE) || n == 0)
 			{
+				// Make dummy entries to maintain page length
+				if (n == 0)
+				{
+					//printf("Creating dummies...\n");
+					while (index_rollover < ARTICLES_PER_PAGE)
+					{
+						fprintf(idx_file," <br /><br />\n");
+						index_rollover++;
+					}
+					//printf("Made dummies\n");
+				}
 				fprintf(idx_file,"<br /></div></div></div>\n");
 				fprintf(idx_file,"<h6>");
 				if (index_num != 0)
@@ -222,32 +233,25 @@ void files_build_index()
 				index_num = index_num + 1;
 			}
 		}
-		// Make dummy entries to maintain page length
-		if (n == 0)
-		{
-			while (index_rollover < ARTICLES_PER_PAGE)
-			{
-				fprintf(idx_file," <br /><br />\n");
-				index_rollover++;
-			}
-		}
-		printf("Trying to free the list entry\n");
+		//printf("Freeing list at n... ");
 		if (list[n])
 		{
-			printf("REALLY DOING IT \n");
 			free(list[n]);
-			printf("Doneskies\n");
 		}
+		//printf("ok\n");
 	}
+	//printf("Freeing list... ");
 	if (list)
 	{
 		free(list);
 	}
+	//printf("ok\n");
 	if (!fname || !idx_file)
 	{
 		return;
 	}
 	fprintf(idx_file,"<br /></div></div></div>\n");
+	//printf("Adding page nav section\n");
 	fprintf(idx_file,"<h6>");
 	if (index_num != 0)
 	{

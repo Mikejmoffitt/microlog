@@ -14,6 +14,9 @@
 #define OUT_APPEND ".html"
 #define ARTICLES_PER_PAGE 15
 
+// For filtering out files beginning with a dot (dotfiles and .. . dirs)
+int files_omit_dotfiles(const struct dirent *entry);
+
 // Filename to parse, directory to look in, directory to put resulting HTML file 
 void files_process_article(char *d_name, char *in_dir, char *out_dir);
 

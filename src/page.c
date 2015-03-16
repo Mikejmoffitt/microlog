@@ -82,7 +82,6 @@ void handle_pound(FILE *in, FILE *out)
 
 int page_create_article(FILE *in, FILE *out)
 {
-	printf("-------{ PARSING SOURCE }-------\n");
 	if (!in || !out)
 	{
 		printf("Couldn't open source file.\n");
@@ -99,7 +98,7 @@ int page_create_article(FILE *in, FILE *out)
 	// And the date
 	getline(&date, &len, in);
 	chomp_newline(date);
-	printf("Title: %s\n%s\n",title,date);
+	printf("Parsing \"%s\"\n",title);
 
 	// Print them
 
