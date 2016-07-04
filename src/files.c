@@ -107,8 +107,8 @@ void files_index_entry(FILE *idx_file, char *articles_dir, char *d_name)
 	chomp_newline(date);
 
 	fclose(art_file);
-	fprintf(idx_file,"<a href=\"articles/\%s.html\">",d_name);
-	fprintf(idx_file,"%s: %s<br /><br />",date, title);
+	fprintf(idx_file,"<a id='indexlink' href=\"articles/\%s.html\">",d_name);
+	fprintf(idx_file,"%s: %s<br />",date, title);
 	fprintf(idx_file,"</a>\n");
 }
 

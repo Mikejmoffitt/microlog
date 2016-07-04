@@ -14,8 +14,7 @@ void handle_pound(FILE *in, FILE *out)
 		default:
 			// User really wanted pound and whichever char followed it
 			fputc('#',out);
-			fputc(get,out);
-			break;
+			return;
 		case 'i':
 			fputs("<img src='../res/",out);
 			waiting = WAITING_IMG;
@@ -109,7 +108,7 @@ int page_create_article(FILE *in, FILE *out)
 	fputs("<br /><h3>\n",out);
 	fputs(title,out);
 	fputs("</h3>",out);
-	char get = fgetc(in);
+	int get = fgetc(in);
 
 	fputs("<div id='content'>\n",out);
 	fputs("<span id='date'>Written ",out);
@@ -125,12 +124,10 @@ int page_create_article(FILE *in, FILE *out)
 		{
 			handle_pound(in,out);
 		}
-		else
+		else if (get != EOF && get < 0x80 && get > 0x1F && (unsigned char)get != 0xFF)
 		{
-			fputc(get,out);
+			fputc((get & 0x7F), out);
 		}
-
-		// TODO: Check for image macro definitions
 		get = fgetc(in);
 
 		// Make linebreaks useful for the writer
@@ -138,6 +135,7 @@ int page_create_article(FILE *in, FILE *out)
 		{
 			fputs("<br />\n",out);
 		}
+		
 	}
 	fputs("<br /><a href='../index.html' id='returnlink'>Back to main index</a><br />\n",out);
 	fputs("<br /><br /></div></div>\n</div>\n",out);
