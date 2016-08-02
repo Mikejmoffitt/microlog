@@ -16,7 +16,7 @@ void handle_pound(FILE *in, FILE *out)
 			fputc('#',out);
 			return;
 		case 'i':
-			fputs("<img src='../res/",out);
+			fputs("<span id='img-wrap'><img src='../res/",out);
 			waiting = WAITING_IMG;
 			break;
 		case 'v':
@@ -51,7 +51,7 @@ void handle_pound(FILE *in, FILE *out)
 				switch (waiting)
 				{
 					case WAITING_IMG:
-						fputs("' />",out);
+						fputs("' /></span>",out);
 						return;
 					case WAITING_VID:
 						fputs("' type='video/mp4'><br /></video>",out);
